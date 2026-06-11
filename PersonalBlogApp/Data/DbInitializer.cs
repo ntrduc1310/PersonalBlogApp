@@ -15,11 +15,22 @@ namespace PersonalBlogApp.Data
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             // Apply any pending migrations
             if (context.Database.GetPendingMigrations().Any())
             {
                 await context.Database.MigrateAsync();
+            }
+
+            // Seed Roles
+            string[] roleNames = { "Admin", "User" };
+            foreach (var roleName in roleNames)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
             }
 
             // Seed Admin User
@@ -38,9 +49,21 @@ namespace PersonalBlogApp.Data
 
                 // P@ssw0rd123 satisfies default Identity requirements
                 var result = await userManager.CreateAsync(adminUser, "Admin@123");
-                if (!result.Succeeded)
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+                else
                 {
                     throw new Exception($"Could not seed admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+            else
+            {
+                // Ensure existing admin has the role
+                if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
 
