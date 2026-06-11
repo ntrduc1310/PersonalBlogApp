@@ -1,0 +1,64 @@
+﻿@model PersonalBlogApp.ViewModels.BlogCreateVM
+
+@{
+    ViewData["Title"] = "Tạo Bài Viết Mới";
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">Tạo Bài Viết Mới</h3>
+        </div>
+        <div class="card-body bg-light">
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold"></label>
+                    <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề bài viết..." />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Priority" class="form-label fw-bold"></label>
+                    <select asp-for="Priority" class="form-select">
+                        <option value="1">1 - Rất thấp</option>
+                        <option value="2">2 - Thấp</option>
+                        <option value="3">3 - Trung bình</option>
+                        <option value="4">4 - Cao</option>
+                        <option value="5">5 - Rất cao</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Content" class="form-label fw-bold"></label>
+                    <textarea asp-for="Content" id="tiny-editor" class="form-control" rows="10"></textarea>
+                    <span asp-validation-for="Content" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+                    <button type="submit" class="btn btn-success px-4">Đăng bài viết</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <!-- TinyMCE CDN integration -->
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+        selector: '#tiny-editor',
+        plugins: 'lists link image wordcount code table',
+        toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | numlist bullist | code',
+        menubar: false,
+        height: 350,
+        setup: function (editor) {
+        editor.on('change', function () {
+        tinymce.triggerSave(); // Sync data from TinyMCE iframe to raw textarea for Validation
+        });
+        }
+        });
+    </script>
+}
