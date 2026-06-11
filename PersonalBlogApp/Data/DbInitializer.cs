@@ -67,6 +67,39 @@ namespace PersonalBlogApp.Data
                 }
             }
 
+            // Seed Regular User
+            string userEmail = "user@example.com";
+            var regularUser = await userManager.FindByEmailAsync(userEmail);
+
+            if (regularUser == null)
+            {
+                regularUser = new ApplicationUser
+                {
+                    UserName = userEmail,
+                    Email = userEmail,
+                    EmailConfirmed = true,
+                    AvatarUrl = "https://ui-avatars.com/api/?name=User&background=random"
+                };
+
+                var result = await userManager.CreateAsync(regularUser, "User@123");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(regularUser, "User");
+                }
+                else
+                {
+                    throw new Exception($"Could not seed user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+            else
+            {
+                // Ensure existing user has the role
+                if (!await userManager.IsInRoleAsync(regularUser, "User"))
+                {
+                    await userManager.AddToRoleAsync(regularUser, "User");
+                }
+            }
+
             // Seed Sample Blogs
             if (!context.Blogs.Any())
             {
