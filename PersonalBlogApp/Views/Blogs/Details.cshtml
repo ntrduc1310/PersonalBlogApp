@@ -1,31 +1,98 @@
 ﻿@model PersonalBlogApp.Models.Blog
+@using Microsoft.AspNetCore.Identity
+@using PersonalBlogApp.Models
+@inject UserManager<ApplicationUser> UserManager
 
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = "Chi tiết bài viết";
+    bool isAuthorized = User.IsInRole("Admin") || Model.UserId == UserManager.GetUserId(User);
 }
 
-<div class="container mt-4" style="max-width: 800px;">
-    <div class="bg-white p-5 rounded shadow-sm border">
-        <!-- 1. Tiêu đề lớn -->
-        <h1 class="display-5 fw-bold text-primary mb-3">@Model.Title</h1>
+<style>
+    .article-meta {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
 
-        <!-- 2. Thông tin tác giả & ngày đăng -->
-        <div class="d-flex align-items-center text-muted my-3 border-bottom pb-3">
-            <span class="me-3">Tác giả: <strong>@Model.User?.Email</strong></span>
-            <span class="me-3">|</span>
-            <span class="me-3">Đăng lúc: @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
-            <span class="me-3">|</span>
-            <span class="badge bg-info text-dark">Độ ưu tiên: @Model.Priority</span>
-        </div>
+    .content-body {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+</style>
 
-        <!-- 3. Nội dung bài viết (Render HTML an toàn từ TinyMCE) -->
-        <div class="blog-content mt-4" style="line-height: 1.8; font-size: 1.1rem;">
-            @Html.Raw(Model.Content)
-        </div>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <a asp-action="Index" class="text-decoration-none text-muted mb-3 d-inline-block">
+                &larr; Quay lại danh sách
+            </a>
 
-        <!-- 4. Nút quay lại danh sách -->
-        <div class="d-flex justify-content-between mt-5 pt-3 border-top">
-            <a asp-action="Index" class="btn btn-secondary">← Quay lại danh sách</a>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+
+                    <h1 class="fw-bold mb-4" style="color: #2c3e50;">@Model.Title</h1>
+
+                    <div class="article-meta d-flex flex-wrap align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted fw-medium">
+                                <i class="bi bi-person-circle me-1"></i> Tác giả: @(Model.User?.Email ?? "Ẩn danh")
+                            </span>
+                            <span class="text-muted">|</span>
+                            <span class="text-muted">
+                                <i class="bi bi-calendar3 me-1"></i> @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                            </span>
+                        </div>
+
+                        <div class="mt-2 mt-md-0">
+                            @switch (Model.Priority)
+                            {
+                                case 5:
+                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">5 - Rất cao</span>
+                                    ; break;
+                                case 4:
+
+                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">4 - Cao</span>
+                                    ; break;
+                                case 3:
+
+                                    <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">3 - Trung bình</span>
+                                    ; break;
+                                case 2:
+
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">2 - Thấp</span>
+                                    ; break;
+                                default:
+
+                                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">1 - Rất thấp</span>
+                                    ; break;
+                            }
+                        </div>
+                    </div>
+
+                    <hr class="mb-4 text-muted opacity-25">
+
+                    <!-- Nội dung bài viết -->
+                    <div class="content-body">
+                        @Html.Raw(Model.Content)
+                    </div>
+
+                </div>
+
+                @if (isAuthorized)
+                {
+                    <div class="card-footer bg-white border-top-0 p-4 p-md-5 pt-0 d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-4 rounded-pill">
+                            Chỉnh sửa bài viết
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger px-4 rounded-pill">
+                            Xóa
+                        </a>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
