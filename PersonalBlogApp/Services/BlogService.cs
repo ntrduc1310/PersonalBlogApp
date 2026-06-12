@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalBlogApp.Data;
 using PersonalBlogApp.Models;
-using PersonalBlogApp.ViewModels; // Thêm namespace để nhận diện ViewModel
-
+using PersonalBlogApp.ViewModels; 
 namespace PersonalBlogApp.Services
 {
     public class BlogService : IBlogService

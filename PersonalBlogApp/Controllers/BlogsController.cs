@@ -61,7 +61,6 @@ namespace PersonalBlogApp.Controllers
 
             await _blogService.CreateBlogAsync(model, currentUserId);
 
-            // Sử dụng TempData truyền thông điệp thành công sang View sau khi chuyển hướng (Redirect)
             TempData["SuccessMessage"] = "Đăng bài viết mới thành công!";
             return RedirectToAction(nameof(Index));
         }
