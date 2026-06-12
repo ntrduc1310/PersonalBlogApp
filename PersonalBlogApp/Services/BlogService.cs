@@ -37,8 +37,12 @@ namespace PersonalBlogApp.Services
         {
             return await _context.Blogs
                 .Include(b => b.User)
+                // Sắp xếp bình luận mới nhất lên đầu ngay trong Include (Tính năng của EF Core 5+)
+                .Include(b => b.Comments.OrderByDescending(c => c.CreatedAt))
+                    .ThenInclude(c => c.User) // Tải thông tin người bình luận
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
+
 
         // Ánh xạ dữ liệu từ ViewModel sang Model DB để tiến hành lưu mới
         public async Task CreateBlogAsync(BlogCreateVM model, string userId)
@@ -90,6 +94,18 @@ namespace PersonalBlogApp.Services
                 .AnyAsync(b => b.Id == id && b.UserId == userId);
 
             return blogExists;
+        }
+        public async Task AddCommentAsync(CommentCreateVM model, string userId)
+        {
+            var comment = new Comment
+            {
+                BlogId = model.BlogId,
+                Content = model.Content,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
         }
     }
 }
