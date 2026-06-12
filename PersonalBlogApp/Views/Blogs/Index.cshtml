@@ -1,0 +1,122 @@
+﻿@model IEnumerable<PersonalBlogApp.Models.Blog>
+@inject Microsoft.AspNetCore.Identity.UserManager<PersonalBlogApp.Models.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Danh Sách Bài Viết";
+    var currentSort = ViewData["CurrentSort"] as string;
+    var currentUserId = UserManager.GetUserId(User);
+}
+
+<style>
+    .blog-title-link {
+        color: #212529 !important; 
+        text-decoration: none !important;
+        transition: color 0.15s ease-in-out, text-decoration 0.15s ease-in-out;
+    }
+
+        .blog-title-link:hover {
+            color: #0d6efd !important; 
+            text-decoration: underline !important; 
+        }
+</style>
+
+<div class="container mt-4">
+    <!-- HIỂN THỊ THÔNG BÁO TEMP DATA (SUCCESS/FAILED CASES HANDLE) -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Cụm Tiêu đề, Nút sắp xếp và Nút bấm tạo bài -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2 class="fw-bold m-0">Danh Sách Bài Viết</h2>
+        <div class="d-flex gap-2">
+            <!-- Nút lọc Sắp xếp theo   yêu cầu Task 3.2 -->
+            @if (currentSort == "priority")
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary">Sắp xếp: Mới nhất</a>
+            }
+            else
+            {
+                <a asp-action="Index" asp-route-sort="priority" class="btn btn-outline-primary"> Sắp xếp: Độ ưu tiên</a>
+            }
+            <a asp-action="Create" class="btn btn-success">Tạo bài viết mới</a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info shadow-sm">Bạn chưa có bài viết nào ở đây cả. Hãy tạo bài đầu tiên!</div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded bg-white">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 35%;">Tiêu đề</th>
+                        <th style="width: 15%;">Mức ưu tiên</th>
+                        <th style="width: 20%;">Ngày tạo</th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th style="width: 15%;">Tác giả (Admin View)</th>
+                        }
+                        <th style="width: 15%;" class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="blog-title-link">
+                                    @item.Title
+                                </a>
+                            </td>
+                            <td>
+                                @switch (item.Priority)
+                                {
+                                    case 5:
+                                        <span class="badge bg-danger px-2.5 py-1.5 shadow-sm">5 - Rất cao</span>
+                                        break;
+                                    case 4:
+                                        <span class="badge bg-warning text-dark px-2.5 py-1.5 shadow-sm">4 - Cao</span>
+                                        break;
+                                    case 3:
+                                        <span class="badge bg-info text-dark px-2.5 py-1.5 shadow-sm">3 - Trung bình</span>
+                                        break;
+                                    case 2:
+                                        <span class="badge bg-secondary px-2.5 py-1.5 shadow-sm">2 - Thấp</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-light text-dark px-2.5 py-1.5 shadow-sm">1 - Rất thấp</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-muted">@item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td class="text-muted">@item.User?.Email</td>
+                            }
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Xem</a>
+
+                                    <!-- UI OWNERSHIP CHECK: Chỉ hiện nút Sửa/Xóa nếu là chủ bài viết hoặc ADMIN -->
+                                    @if (User.IsInRole("Admin") || item.UserId == currentUserId)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Sửa</a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Xóa</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
