@@ -7,35 +7,39 @@
     <!-- TempData Alerts -->
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <h4 class="fw-bold mb-4 comment-count">Bình luận (@Model.Comments.Count)</h4>
+    <h4 class="fw-bold mb-4 comment-count" style="color: var(--color-text-title);">
+        <i class="bi bi-chat-text-fill me-2 text-primary"></i>Bình luận (@Model.Comments.Count)
+    </h4>
 
     <!-- Form viết bình luận mới (Chỉ hiện khi đã đăng nhập) -->
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
-        <div class="card border-0 bg-light shadow-sm rounded-4 mb-4">
+        <div class="card border-0 bg-white shadow-sm mb-4" style="border-radius: var(--radius-lg); border: 1px solid var(--color-border) !important;">
             <div class="card-body p-4">
                 <form asp-controller="Comments" asp-action="Create" method="post" id="commentForm">
                     <input type="hidden" name="BlogId" value="@Model.Id" />
 
                     <div class="mb-3">
-                        <textarea name="Content" class="form-control border-0 bg-white" rows="3"
-                                  placeholder="Viết bình luận của bạn..." required></textarea>
+                        <textarea name="Content" class="form-control form-control-custom" rows="3"
+                                  placeholder="Chia sẻ ý kiến của bạn về bài viết này..." required style="resize: none;"></textarea>
                     </div>
                     <div class="text-end">
-                        <button type="submit" class="btn btn-primary px-4 rounded-pill">Gửi bình luận</button>
+                        <button type="submit" class="btn btn-premium-primary px-4 py-2">
+                            Gửi bình luận <i class="bi bi-send-fill ms-1 fs-7"></i>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -43,50 +47,50 @@
     }
     else
     {
-        <div class="alert alert-warning rounded-4 shadow-sm">
-            Vui lòng <a href="/Identity/Account/Login" class="alert-link">đăng nhập</a> để tham gia bình luận.
+        <div class="alert alert-warning rounded-4 shadow-sm py-3 px-4">
+            <i class="bi bi-info-circle-fill me-2"></i>Vui lòng <a href="/Identity/Account/Login" class="alert-link fw-bold">đăng nhập</a> để tham gia bình luận cùng mọi người.
         </div>
     }
     
-
     <!-- Danh sách các bình luận cũ -->
-    <div class="comment-list">
+    <div class="comment-list mt-4 d-flex flex-column gap-3">
         @if (!Model.Comments.Any())
         {
-            <p class="text-muted fst-italic text-center py-4">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
+            <p class="text-muted fst-italic text-center py-5">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
         }
         else
         {
-            @foreach (var comment in Model.Comments)
+            foreach (var comment in Model.Comments)
             {
-                <div class="d-flex mb-4 comment-item" id="comment-@comment.Id">
+                <div class="d-flex comment-item" id="comment-@comment.Id">
                     <!-- Avatar mặc định (Chữ cái đầu của Email) -->
                     <div class="flex-shrink-0">
-                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
-                             style="width: 48px; height: 48px; font-size: 1.2rem;">
+                        <div class="bg-secondary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                             style="width: 44px; height: 44px; font-size: 1.1rem; background: #94a3b8 !important;">
                             @(comment.User?.Email?.Substring(0, 1).ToUpper() ?? "U")
                         </div>
                     </div>
 
                     <!-- Nội dung bình luận -->
                     <div class="flex-grow-1 ms-3">
-                        <div class="bg-light p-3 rounded-4 shadow-sm position-relative">
+                        <div class="comment-bubble position-relative">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <strong class="text-primary">@(comment.User?.Email ?? "Ẩn danh")</strong>
-                                <small class="text-muted">@comment.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                                <strong class="text-primary small">@(comment.User?.Email ?? "Ẩn danh")</strong>
+                                <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>@comment.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
                             </div>
-                            <p class="mb-0 text-dark" style="white-space: pre-line;">@comment.Content</p>
+                            <p class="mb-0 text-dark small" style="white-space: pre-line; line-height: 1.6;">@comment.Content</p>
 
                             <!-- Nút xóa chỉ hiện đối với chủ comment hoặc Admin -->
                             @if (User.Identity != null && User.Identity.IsAuthenticated &&
                                  (User.IsInRole("Admin") || comment.UserId == UserManager.GetUserId(User)))
                             {
-                                <div class="position-absolute end-0 bottom-0 mb-2 me-3">
+                                <div class="position-absolute end-0 top-0 mt-3 me-3">
                                     <form asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" method="post" class="d-inline delete-comment-form">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0 py-0 px-2 rounded-pill"
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1 rounded-circle"
+                                                title="Xóa bình luận"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
-                                            <i class="bi bi-trash"></i> Xóa
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
                                 </div>

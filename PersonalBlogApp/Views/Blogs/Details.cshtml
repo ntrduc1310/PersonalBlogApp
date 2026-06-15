@@ -9,92 +9,122 @@
 }
 
 <style>
-    .article-meta {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 12px 20px;
-        font-size: 0.9rem;
+    .article-header {
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .article-title {
+        font-size: 2.75rem;
+        line-height: 1.25;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--color-text-title);
     }
 
     .content-body {
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: #333;
+        font-size: 1.15rem;
+        line-height: 1.9;
+        color: #334155;
+    }
+
+    .content-body p {
+        margin-bottom: 1.5rem;
+    }
+
+    .content-body img {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        margin: 2rem 0;
+    }
+
+    .avatar-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end));
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.15);
     }
 </style>
 
-<div class="container mt-4 mb-5">
+<div class="container mt-2 mb-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <a asp-action="Index" class="text-decoration-none text-muted mb-3 d-inline-block">
-                &larr; Quay lại danh sách
+        <div class="col-lg-8 col-md-10">
+            <!-- Back to list link -->
+            <a asp-action="Index" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-1 small hover-primary-text">
+                <i class="bi bi-arrow-left"></i> Quay lại danh sách
             </a>
 
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-body p-4 p-md-5">
+            <article class="card border-0 bg-white shadow-sm p-4 p-md-5 mb-5" style="border-radius: 24px;">
+                <div class="article-header">
+                    <!-- Priority badge -->
+                    <div class="mb-3">
+                        @switch (Model.Priority)
+                        {
+                            case 5:
+                                <span class="badge badge-custom badge-inactive">5 - Rất cao</span>
+                                break;
+                            case 4:
+                                <span class="badge badge-custom badge-priority-high">4 - Cao</span>
+                                break;
+                            case 3:
+                                <span class="badge badge-custom badge-user">3 - Trung bình</span>
+                                break;
+                            case 2:
+                                <span class="badge badge-custom badge-active">2 - Thấp</span>
+                                break;
+                            default:
+                                <span class="badge badge-custom bg-light text-dark">1 - Rất thấp</span>
+                                break;
+                        }
+                    </div>
 
-                    <h1 class="fw-bold mb-4" style="color: #2c3e50;">@Model.Title</h1>
+                    <!-- Article Title -->
+                    <h1 class="article-title mb-4">@Model.Title</h1>
 
-                    <div class="article-meta d-flex flex-wrap align-items-center justify-content-between mb-4">
+                    <!-- Meta information -->
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3">
-                            <span class="text-muted fw-medium">
-                                <i class="bi bi-person-circle me-1"></i> Tác giả: @(Model.User?.Email ?? "Ẩn danh")
-                            </span>
-                            <span class="text-muted">|</span>
-                            <span class="text-muted">
-                                <i class="bi bi-calendar3 me-1"></i> @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-                            </span>
+                            <div class="avatar-circle">
+                                @(Model.User?.Email?.Substring(0, 1).ToUpper() ?? "U")
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">@(Model.User?.Email ?? "Ẩn danh")</h6>
+                                <small class="text-muted"><i class="bi bi-calendar3 me-1"></i> @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
                         </div>
 
-                        <div class="mt-2 mt-md-0">
-                            @switch (Model.Priority)
-                            {
-                                case 5:
-                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">5 - Rất cao</span>
-                                    ; break;
-                                case 4:
-
-                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">4 - Cao</span>
-                                    ; break;
-                                case 3:
-
-                                    <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">3 - Trung bình</span>
-                                    ; break;
-                                case 2:
-
-                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">2 - Thấp</span>
-                                    ; break;
-                                default:
-
-                                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">1 - Rất thấp</span>
-                                    ; break;
-                            }
-                        </div>
+                        <!-- Management actions (if owner or Admin) -->
+                        @if (isAuthorized)
+                        {
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-premium-outline px-3 py-2">
+                                    <i class="bi bi-pencil-square me-1"></i> Sửa bài
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-premium-outline-danger px-3 py-2">
+                                    <i class="bi bi-trash-fill me-1"></i> Xóa
+                                </a>
+                            </div>
+                        }
                     </div>
-
-                    <hr class="mb-4 text-muted opacity-25">
-
-                    <!-- Nội dung bài viết -->
-                    <div class="content-body">
-                        @Html.Raw(Model.Content)
-                    </div>
-
                 </div>
 
-                @if (isAuthorized)
-                {
-                    <div class="card-footer bg-white border-top-0 p-4 p-md-5 pt-0 d-flex gap-2">
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-4 rounded-pill">
-                            Chỉnh sửa bài viết
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger px-4 rounded-pill">
-                            Xóa
-                        </a>
-                    </div>
-                }
-            </div>
-            <partial name="_CommentSection" model="Model" />
+                <!-- Article Content -->
+                <div class="content-body">
+                    @Html.Raw(Model.Content)
+                </div>
+            </article>
 
+            <!-- Comments Section -->
+            <partial name="_CommentSection" model="Model" />
         </div>
     </div>
 </div>

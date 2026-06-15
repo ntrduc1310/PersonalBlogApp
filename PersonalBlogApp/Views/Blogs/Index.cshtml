@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PersonalBlogApp.Models.Blog>
+@model IEnumerable<PersonalBlogApp.Models.Blog>
 @inject Microsoft.AspNetCore.Identity.UserManager<PersonalBlogApp.Models.ApplicationUser> UserManager
 
 @{
@@ -7,116 +7,155 @@
     var currentUserId = UserManager.GetUserId(User);
 }
 
-<style>
-    .blog-title-link {
-        color: #212529 !important; 
-        text-decoration: none !important;
-        transition: color 0.15s ease-in-out, text-decoration 0.15s ease-in-out;
-    }
-
-        .blog-title-link:hover {
-            color: #0d6efd !important; 
-            text-decoration: underline !important; 
-        }
-</style>
-
-<div class="container mt-4">
-    <!-- HIỂN THỊ THÔNG BÁO TEMP DATA (SUCCESS/FAILED CASES HANDLE) -->
+<div class="container mt-2">
+    <!-- TempData Alerts -->
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded mb-4" role="alert">
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-    <!-- Cụm Tiêu đề, Nút sắp xếp và Nút bấm tạo bài -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <h2 class="fw-bold m-0">Danh Sách Bài Viết</h2>
-        <div class="d-flex gap-2">
-            <!-- Nút lọc Sắp xếp theo   yêu cầu Task 3.2 -->
+    <!-- Page Title & Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold m-0" style="color: #2c3e50; font-size: 2.2rem;">
+                Bài viết của bạn
+            </h2>
+            <p class="text-muted mb-0 small">Quản lý và xuất bản nội dung sáng tạo của bạn.</p>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+            <!-- Priority Sort -->
             @if (currentSort == "priority")
             {
-                <a asp-action="Index" class="btn btn-outline-secondary">Sắp xếp: Mới nhất</a>
+                <a asp-action="Index" class="btn btn-premium-outline px-4">
+                    <i class="bi bi-clock-history me-1"></i> Mới nhất
+                </a>
             }
             else
             {
-                <a asp-action="Index" asp-route-sort="priority" class="btn btn-outline-primary"> Sắp xếp: Độ ưu tiên</a>
+                <a asp-action="Index" asp-route-sort="priority" class="btn btn-premium-outline px-4">
+                    <i class="bi bi-sort-numeric-down-alt me-1"></i> Độ ưu tiên
+                </a>
             }
-            <a asp-action="Create" class="btn btn-success">Tạo bài viết mới</a>
+            
+            <a asp-action="Create" class="btn btn-premium-primary px-4">
+                <i class="bi bi-plus-circle-fill me-2"></i>Tạo bài viết
+            </a>
         </div>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info shadow-sm">Bạn chưa có bài viết nào ở đây cả. Hãy tạo bài đầu tiên!</div>
+        <div class="card border-0 bg-white rounded-4 shadow-sm p-5 text-center">
+            <div class="text-muted mb-3">
+                <i class="bi bi-journal-x" style="font-size: 3rem; color: #cbd5e1;"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Chưa có bài viết nào</h5>
+            <p class="text-muted small">Hãy bắt đầu viết bài viết đầu tiên của bạn để chia sẻ kiến thức ngay hôm nay!</p>
+            <div class="mt-3">
+                <a asp-action="Create" class="btn btn-premium-primary">Tạo bài viết đầu tiên</a>
+            </div>
+        </div>
     }
     else
     {
-        <div class="table-responsive shadow-sm rounded bg-white">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th style="width: 35%;">Tiêu đề</th>
-                        <th style="width: 15%;">Mức ưu tiên</th>
-                        <th style="width: 20%;">Ngày tạo</th>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <th style="width: 15%;">Tác giả (Admin View)</th>
-                        }
-                        <th style="width: 15%;" class="text-end">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="fw-bold">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="blog-title-link">
-                                    @item.Title
-                                </a>
-                            </td>
-                            <td>
-                                @switch (item.Priority)
-                                {
-                                    case 5:
-                                        <span class="badge bg-danger px-2.5 py-1.5 shadow-sm">5 - Rất cao</span>
-                                        break;
-                                    case 4:
-                                        <span class="badge bg-warning text-dark px-2.5 py-1.5 shadow-sm">4 - Cao</span>
-                                        break;
-                                    case 3:
-                                        <span class="badge bg-info text-dark px-2.5 py-1.5 shadow-sm">3 - Trung bình</span>
-                                        break;
-                                    case 2:
-                                        <span class="badge bg-secondary px-2.5 py-1.5 shadow-sm">2 - Thấp</span>
-                                        break;
-                                    default:
-                                        <span class="badge bg-light text-dark px-2.5 py-1.5 shadow-sm">1 - Rất thấp</span>
-                                        break;
-                                }
-                            </td>
-                            <td class="text-muted">@item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <td class="text-muted">@item.User?.Email</td>
-                            }
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm">
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Xem</a>
-
-                                    <!-- UI OWNERSHIP CHECK: Chỉ hiện nút Sửa/Xóa nếu là chủ bài viết hoặc ADMIN -->
-                                    @if (User.IsInRole("Admin") || item.UserId == currentUserId)
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card glass-card hover-up h-100 d-flex flex-column border-0" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!-- Priority badge & Created date -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    @switch (item.Priority)
                                     {
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Sửa</a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Xóa</a>
+                                        case 5:
+                                            <span class="badge badge-custom badge-inactive">5 - Rất cao</span>
+                                            break;
+                                        case 4:
+                                            <span class="badge badge-custom badge-priority-high">4 - Cao</span>
+                                            break;
+                                        case 3:
+                                            <span class="badge badge-custom badge-user">3 - Trung bình</span>
+                                            break;
+                                        case 2:
+                                            <span class="badge badge-custom badge-active">2 - Thấp</span>
+                                            break;
+                                        default:
+                                            <span class="badge badge-custom bg-light text-dark">1 - Rất thấp</span>
+                                            break;
                                     }
                                 </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                                <small class="text-muted"><i class="bi bi-calendar3 me-1"></i> @item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</small>
+                            </div>
+
+                            <!-- Blog Title -->
+                            <h4 class="card-title fw-bold mb-3">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark hover-primary-text" style="transition: var(--transition-smooth);">
+                                    @item.Title
+                                </a>
+                            </h4>
+
+                            <!-- Blog Excerpt (Strip HTML tags) -->
+                            <p class="card-text text-muted small mb-4 flex-grow-1">
+                                @{
+                                    var plainText = System.Text.RegularExpressions.Regex.Replace(item.Content ?? "", "<.*?>", string.Empty);
+                                    if (plainText.Length > 120) plainText = plainText.Substring(0, 117) + "...";
+                                }
+                                @plainText
+                            </p>
+
+                            <hr class="opacity-25 mb-3">
+
+                            <!-- Author Info (For Admin View) -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                         style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                        @(item.User?.Email?.Substring(0, 1).ToUpper() ?? "U")
+                                    </div>
+                                    <span class="small fw-semibold text-muted" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="@item.User?.Email">
+                                        @(item.User?.Email ?? "Ẩn danh")
+                                    </span>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex gap-1">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-premium-outline px-3" style="padding: 0.35rem 0.75rem;">
+                                        Xem
+                                    </a>
+                                    @if (User.IsInRole("Admin") || item.UserId == currentUserId)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning border-0 px-2 rounded-circle" title="Sửa">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger border-0 px-2 rounded-circle" title="Xóa">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>
+
+<style>
+    .hover-primary-text:hover {
+        color: var(--color-primary-end) !important;
+    }
+</style>

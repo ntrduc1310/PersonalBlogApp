@@ -27,13 +27,13 @@
                         <!-- Email field (Readonly) -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold text-muted">Email tài khoản</label>
-                            <input asp-for="Email" class="form-control bg-light rounded-pill px-3 py-2" readonly />
+                            <input asp-for="Email" class="form-control form-control-custom bg-light" readonly />
                         </div>
 
                         <!-- Role dropdown -->
                         <div class="mb-4">
                             <label asp-for="Role" class="form-label fw-semibold text-muted">Vai trò hệ thống</label>
-                            <select asp-for="Role" class="form-select rounded-pill px-3 py-2" required>
+                            <select asp-for="Role" class="form-select form-select-custom" required>
                                 <option value="User">User (Người dùng thường)</option>
                                 <option value="Admin">Admin (Quản trị viên)</option>
                             </select>
@@ -53,10 +53,10 @@
 
                         <!-- Buttons -->
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 flex-grow-1">
+                            <button type="submit" class="btn btn-premium-primary px-4 py-2 flex-grow-1">
                                 Lưu thay đổi
                             </button>
-                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 py-2 flex-grow-1">
+                            <a asp-action="Index" class="btn btn-premium-outline px-4 py-2 flex-grow-1 text-center">
                                 Hủy bỏ
                             </a>
                         </div>

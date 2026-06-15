@@ -1,8 +1,153 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@using Microsoft.AspNetCore.Identity
+@using PersonalBlogApp.Models
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .hero-section {
+        padding: 6rem 0;
+        background: radial-gradient(circle at 90% 10%, rgba(99, 102, 241, 0.08) 0%, rgba(255, 255, 255, 0) 60%);
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #3b82f6, #6366f1, #4f46e5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+    }
+
+    .feature-icon-wrapper {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+        background: rgba(99, 102, 241, 0.08);
+        color: var(--color-primary-end);
+        font-size: 1.5rem;
+        transition: var(--transition-smooth);
+    }
+
+    .feature-card:hover .feature-icon-wrapper {
+        background: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end));
+        color: #ffffff;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="hero-section">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+                <i class="bi bi-stars me-1"></i> Trực quan - Độc đáo - Bảo mật
+            </span>
+            <h1 class="hero-title mb-4">Chia sẻ câu chuyện của riêng bạn</h1>
+            <p class="lead text-muted mb-5 fs-5">
+                Nền tảng viết blog cá nhân hiện đại giúp bạn truyền tải ý tưởng, kiến thức và cảm xúc một cách chuyên nghiệp với trình biên tập phong phú và giao diện mượt mà.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-controller="Blogs" asp-action="Index" class="btn btn-premium-primary px-4 py-3 text-decoration-none">
+                        <i class="bi bi-file-earmark-post me-2"></i> Khám phá bài viết
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-premium-primary px-5 py-3 text-decoration-none">
+                        Bắt đầu ngay
+                    </a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-premium-outline px-5 py-3 text-decoration-none">
+                        Đăng ký tài khoản
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block text-center">
+            <div class="position-relative d-inline-block">
+                <!-- Large Decorative Blob -->
+                <div class="bg-primary bg-gradient rounded-circle opacity-10 position-absolute" 
+                     style="width: 450px; height: 450px; filter: blur(50px); top: -50px; left: -50px; z-index: -1;"></div>
+                <div class="bg-info bg-gradient rounded-circle opacity-10 position-absolute" 
+                     style="width: 350px; height: 350px; filter: blur(60px); bottom: -50px; right: -50px; z-index: -1;"></div>
+                
+                <div class="glass-card p-5 text-start shadow-lg hover-up" style="max-width: 450px; border-radius: 24px;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">5 - Rất cao</span>
+                        <small class="text-muted"><i class="bi bi-calendar3 me-1"></i> Hôm nay</small>
+                    </div>
+                    <h3 class="fw-bold mb-3">Tương lai của Lập trình Web với .NET 8</h3>
+                    <p class="text-muted small mb-4">
+                        Khám phá cách ASP.NET Core MVC kết hợp cùng các công nghệ hiện đại giúp tối ưu hóa hiệu năng và bảo mật hệ thống web...
+                    </p>
+                    <hr class="opacity-25 mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                 style="width: 32px; height: 32px; font-size: 0.9rem;">
+                                A
+                            </div>
+                            <span class="small fw-semibold">admin@example.com</span>
+                        </div>
+                        <span class="text-primary small fw-semibold">Đọc tiếp &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="py-5 my-5 border-top">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Tính năng nổi bật</h2>
+        <p class="text-muted">Mọi công cụ bạn cần để xuất bản nội dung chất lượng cao</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Feature 1 -->
+        <div class="col-md-4">
+            <div class="card glass-card feature-card h-100 p-4 border-0 shadow-sm">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-pencil-square"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Rich Text Editor</h4>
+                <p class="text-muted small mb-0">
+                    Sử dụng trình soạn thảo TinyMCE cao cấp, giúp chèn hình ảnh, định dạng chữ và tiêu đề dễ dàng.
+                </p>
+            </div>
+        </div>
+        <!-- Feature 2 -->
+        <div class="col-md-4">
+            <div class="card glass-card feature-card h-100 p-4 border-0 shadow-sm">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-chat-left-dots-fill"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Bình luận AJAX</h4>
+                <p class="text-muted small mb-0">
+                    Tương tác mượt mà không độ trễ. Bình luận và xóa phản hồi tức thì mà không cần reload trang.
+                </p>
+            </div>
+        </div>
+        <!-- Feature 3 -->
+        <div class="col-md-4">
+            <div class="card glass-card feature-card h-100 p-4 border-0 shadow-sm">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Bảo mật nâng cao</h4>
+                <p class="text-muted small mb-0">
+                    Phân quyền chặt chẽ theo vai trò (User/Admin), chống giả mạo request (CSRF) và rate limiting an toàn.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
