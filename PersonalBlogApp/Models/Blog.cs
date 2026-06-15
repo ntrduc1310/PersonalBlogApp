@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalBlogApp.Models
 {
@@ -25,7 +24,6 @@ namespace PersonalBlogApp.Models
         [Required]
         public string UserId { get; set; } = string.Empty;
 
-        [ForeignKey("UserId")]
         public ApplicationUser? User { get; set; }
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();

@@ -60,6 +60,25 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.02em;
 }
 
+/* Fix headings color inheritance in colored/text-white containers */
+.text-white h1, .text-white h2, .text-white h3, .text-white h4, .text-white h5, .text-white h6,
+.bg-primary h1, .bg-primary h2, .bg-primary h3, .bg-primary h4, .bg-primary h5, .bg-primary h6,
+.bg-danger h1, .bg-danger h2, .bg-danger h3, .bg-danger h4, .bg-danger h5, .bg-danger h6,
+.bg-success h1, .bg-success h2, .bg-success h3, .bg-success h4, .bg-success h5, .bg-success h6,
+.bg-warning h1, .bg-warning h2, .bg-warning h3, .bg-warning h4, .bg-warning h5, .bg-warning h6 {
+    color: inherit !important;
+}
+
+/* Premium gradient style for page main titles */
+.page-title {
+    background: linear-gradient(135deg, var(--color-primary-start) 0%, #1e1b4b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    display: inline-block;
+}
+
 /* Header & Navbar Customization */
 .navbar-custom {
     background: rgba(255, 255, 255, 0.8) !important;
