@@ -1,0 +1,72 @@
+@model PersonalBlogApp.ViewModels.UserEditVM
+
+@{
+    ViewData["Title"] = "Chỉnh sửa người dùng";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <a asp-action="Index" class="text-decoration-none text-muted mb-3 d-inline-block">
+                &larr; Quay lại danh sách
+            </a>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-primary bg-gradient text-white p-4">
+                    <h4 class="mb-0 fw-bold">Chỉnh sửa tài khoản</h4>
+                    <small class="opacity-75">Thay đổi vai trò hệ thống hoặc trạng thái hoạt động của người dùng.</small>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Validation summary -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Email field (Readonly) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-muted">Email tài khoản</label>
+                            <input asp-for="Email" class="form-control bg-light rounded-pill px-3 py-2" readonly />
+                        </div>
+
+                        <!-- Role dropdown -->
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label fw-semibold text-muted">Vai trò hệ thống</label>
+                            <select asp-for="Role" class="form-select rounded-pill px-3 py-2" required>
+                                <option value="User">User (Người dùng thường)</option>
+                                <option value="Admin">Admin (Quản trị viên)</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+
+                        <!-- IsActive checkbox -->
+                        <div class="mb-5">
+                            <div class="form-check form-switch p-0 d-flex justify-content-between align-items-center bg-light p-3 rounded-4">
+                                <div>
+                                    <label asp-for="IsActive" class="form-check-label fw-semibold text-dark mb-1 d-block">Trạng thái kích hoạt</label>
+                                    <small class="text-muted d-block">Cho phép hoặc chặn tài khoản này đăng nhập vào hệ thống.</small>
+                                </div>
+                                <input asp-for="IsActive" class="form-check-input ms-0" type="checkbox" role="switch" style="width: 3rem; height: 1.5rem;" />
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 flex-grow-1">
+                                Lưu thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 py-2 flex-grow-1">
+                                Hủy bỏ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

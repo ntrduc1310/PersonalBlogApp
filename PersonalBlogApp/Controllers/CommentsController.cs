@@ -45,6 +45,9 @@ namespace PersonalBlogApp.Controllers
 
             var comment = await _blogService.AddCommentAsync(model, userId);
 
+            // Hybrid Response Pattern: If the request is an AJAX call (detected by the X-Requested-With header),
+            // return a JsonResult containing serialized comment details for dynamic UI rendering.
+            // Otherwise, fall back to a full-page redirect.
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return Json(new

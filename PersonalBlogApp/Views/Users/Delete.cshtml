@@ -1,0 +1,59 @@
+@model PersonalBlogApp.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Xác nhận xóa người dùng";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <a asp-action="Index" class="text-decoration-none text-muted mb-3 d-inline-block">
+                &larr; Quay lại danh sách
+            </a>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-danger bg-gradient text-white p-4">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Xác nhận xóa tài khoản</h4>
+                    <small class="opacity-75">Hành động này là vĩnh viễn và không thể khôi phục.</small>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="alert alert-warning rounded-4 p-3 mb-4">
+                        <h5 class="alert-heading fw-bold mb-2">Cảnh báo nghiêm trọng!</h5>
+                        <p class="mb-0 small">
+                            Xóa tài khoản này đồng nghĩa với việc xóa vĩnh viễn toàn bộ **bài viết** và các **bình luận** mà tài khoản này đã đăng trên hệ thống (Cascade Delete).
+                        </p>
+                    </div>
+
+                    <div class="bg-light p-3 rounded-4 mb-5">
+                        <label class="form-label fw-semibold text-muted mb-1">Tài khoản chuẩn bị xóa</label>
+                        <div class="d-flex align-items-center gap-3 mt-2">
+                            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                 style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                @(Model.Email != null ? Model.Email.Substring(0, 1).ToUpper() : "U")
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">@(Model.Email ?? "Ẩn danh")</h6>
+                                <small class="text-muted">User ID: @Model.Id</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 flex-grow-1">
+                                Xác nhận xóa vĩnh viễn
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 py-2 flex-grow-1">
+                                Hủy bỏ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

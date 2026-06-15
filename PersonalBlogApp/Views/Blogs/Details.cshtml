@@ -101,6 +101,18 @@
 
 @section Scripts {
     <script>
+        /**
+         * AJAX Commenting Pattern:
+         * This script intercepts normal HTML form submissions for creating and deleting comments, 
+         * and redirects them through async Fetch API requests. 
+         * 
+         * - Anti-Forgery (CSRF) Protection: The "__RequestVerificationToken" input automatically generated 
+         *   by ASP.NET Core MVC is packaged within the FormData payload to successfully pass the server-side 
+         *   [ValidateAntiForgeryToken] validation check.
+         * 
+         * - Dynamic DOM updates: We append new comments and delete old ones on the fly without refreshing the page, 
+         *   updating the total count dynamically.
+         */
         document.addEventListener("DOMContentLoaded", function () {
             const commentForm = document.getElementById("commentForm");
             const commentList = document.querySelector(".comment-list");

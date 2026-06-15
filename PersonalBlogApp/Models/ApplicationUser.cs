@@ -7,6 +7,7 @@ namespace PersonalBlogApp.Models
     {
         [MaxLength]
         public string? AvatarUrl { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();

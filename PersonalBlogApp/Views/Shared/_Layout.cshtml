@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,7 +28,7 @@
                         @if (User?.IsInRole("Admin") ?? false)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="" asp-controller="Management" asp-action="Users">Admin</a>
+                                <a class="nav-link text-danger" asp-area="" asp-controller="Users" asp-action="Index">Quản lý User</a>
                             </li>
                         }
                         @if (User?.Identity != null && User.Identity.IsAuthenticated)
