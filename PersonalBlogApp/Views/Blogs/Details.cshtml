@@ -1,4 +1,4 @@
-﻿@model PersonalBlogApp.Models.Blog
+@model PersonalBlogApp.Models.Blog
 @using Microsoft.AspNetCore.Identity
 @using PersonalBlogApp.Models
 @inject UserManager<ApplicationUser> UserManager
@@ -98,3 +98,146 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const commentForm = document.getElementById("commentForm");
+            const commentList = document.querySelector(".comment-list");
+            const commentCountEl = document.querySelector(".comment-count");
+
+            if (commentForm) {
+                commentForm.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(commentForm);
+                    
+                    try {
+                        const response = await fetch(commentForm.action, {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.success) {
+                                // Remove placeholder if first comment
+                                const noCommentMsg = commentList.querySelector(".fst-italic");
+                                if (noCommentMsg) {
+                                    noCommentMsg.remove();
+                                }
+
+                                // Get antiforgery token
+                                const antiForgeryToken = commentForm.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                                // Build comment HTML
+                                const newCommentHtml = `
+                                    <div class="d-flex mb-4 comment-item" id="comment-${data.commentId}">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                                                 style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                                ${data.avatarInitial}
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <div class="bg-light p-3 rounded-4 shadow-sm position-relative">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <strong class="text-primary">${data.userEmail}</strong>
+                                                    <small class="text-muted">${data.createdAt}</small>
+                                                </div>
+                                                <p class="mb-0 text-dark" style="white-space: pre-line;">${data.content}</p>
+                                                <div class="position-absolute end-0 bottom-0 mb-2 me-3">
+                                                    <form action="/Comments/Delete/${data.commentId}" method="post" class="d-inline delete-comment-form">
+                                                        <input type="hidden" name="__RequestVerificationToken" value="${antiForgeryToken}" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0 py-0 px-2 rounded-pill"
+                                                                onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
+                                                            <i class="bi bi-trash"></i> Xóa
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+
+                                // Insert at the top of the comment list
+                                commentList.insertAdjacentHTML("afterbegin", newCommentHtml);
+                                
+                                // Reset form
+                                commentForm.reset();
+
+                                // Update count
+                                if (commentCountEl) {
+                                    const match = commentCountEl.textContent.match(/\d+/);
+                                    if (match) {
+                                        const count = parseInt(match[0]) + 1;
+                                        commentCountEl.textContent = `Bình luận (${count})`;
+                                    }
+                                }
+                            }
+                        } else {
+                            const errData = await response.json().catch(() => ({}));
+                            alert(errData.message || "Không thể gửi bình luận.");
+                        }
+                    } catch (error) {
+                        console.error("Error posting comment:", error);
+                        alert("Đã xảy ra lỗi kết nối.");
+                    }
+                });
+            }
+
+            // AJAX Delete Comment (delegated handler)
+            if (commentList) {
+                commentList.addEventListener("submit", async function (e) {
+                    if (e.target.classList.contains("delete-comment-form")) {
+                        e.preventDefault();
+
+                        const form = e.target;
+                        const commentItem = form.closest(".comment-item");
+                        const formData = new FormData(form);
+
+                        try {
+                            const response = await fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest"
+                                }
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.success) {
+                                    // Remove comment item from DOM
+                                    commentItem.remove();
+
+                                    // Update count
+                                    if (commentCountEl) {
+                                        const match = commentCountEl.textContent.match(/\d+/);
+                                        if (match) {
+                                            const count = Math.max(0, parseInt(match[0]) - 1);
+                                            commentCountEl.textContent = `Bình luận (${count})`;
+                                            
+                                            if (count === 0) {
+                                                commentList.innerHTML = '<p class="text-muted fst-italic text-center py-4">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                const errData = await response.json().catch(() => ({}));
+                                alert(errData.message || "Bạn không có quyền xóa bình luận này.");
+                            }
+                        } catch (error) {
+                            console.error("Error deleting comment:", error);
+                            alert("Đã xảy ra lỗi khi xóa bình luận.");
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

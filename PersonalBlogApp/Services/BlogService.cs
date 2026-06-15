@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PersonalBlogApp.Data;
 using PersonalBlogApp.Models;
 using PersonalBlogApp.ViewModels; 
@@ -95,7 +95,7 @@ namespace PersonalBlogApp.Services
 
             return blogExists;
         }
-        public async Task AddCommentAsync(CommentCreateVM model, string userId)
+        public async Task<Comment> AddCommentAsync(CommentCreateVM model, string userId)
         {
             var comment = new Comment
             {
@@ -106,6 +106,36 @@ namespace PersonalBlogApp.Services
             };
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
+
+            // Load User reference to fetch user email/avatar information
+            await _context.Entry(comment).Reference(c => c.User).LoadAsync();
+
+            return comment;
+        }
+
+        public async Task<Comment?> GetCommentAsync(int id)
+        {
+            return await _context.Comments
+                .Include(c => c.Blog)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task DeleteCommentAsync(int id)
+        {
+            var comment = await _context.Comments.FindAsync(id);
+            if (comment != null)
+            {
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<bool> IsCommentOwnerOrAdminAsync(int commentId, string userId, bool isAdmin)
+        {
+            if (isAdmin) return true;
+
+            var comment = await _context.Comments.FindAsync(commentId);
+            return comment != null && comment.UserId == userId;
         }
     }
 }
