@@ -50,8 +50,7 @@ namespace PersonalBlogApp.Data
                     UserName = adminEmail,
                     Email = adminEmail,
                     EmailConfirmed = true,
-                    AvatarUrl = "https://ui-avatars.com/api/?name=Admin&background=random",
-                    IsActive = true
+                    AvatarUrl = "https://ui-avatars.com/api/?name=Admin&background=random"
                 };
 
                 // P@ssw0rd123 satisfies default Identity requirements
@@ -67,12 +66,6 @@ namespace PersonalBlogApp.Data
             }
             else
             {
-                // Ensure existing admin is active and has the role
-                if (!adminUser.IsActive)
-                {
-                    adminUser.IsActive = true;
-                    await userManager.UpdateAsync(adminUser);
-                }
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
@@ -90,8 +83,7 @@ namespace PersonalBlogApp.Data
                     UserName = userEmail,
                     Email = userEmail,
                     EmailConfirmed = true,
-                    AvatarUrl = "https://ui-avatars.com/api/?name=User&background=random",
-                    IsActive = true
+                    AvatarUrl = "https://ui-avatars.com/api/?name=User&background=random"
                 };
 
                 var result = await userManager.CreateAsync(regularUser, "User@123");
@@ -106,12 +98,6 @@ namespace PersonalBlogApp.Data
             }
             else
             {
-                // Ensure existing user is active and has the role
-                if (!regularUser.IsActive)
-                {
-                    regularUser.IsActive = true;
-                    await userManager.UpdateAsync(regularUser);
-                }
                 if (!await userManager.IsInRoleAsync(regularUser, "User"))
                 {
                     await userManager.AddToRoleAsync(regularUser, "User");

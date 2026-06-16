@@ -14,12 +14,15 @@ namespace PersonalBlogApp.Models
         /// </summary>
         [MaxLength]
         public string? AvatarUrl { get; set; }
+<<<<<<< HEAD
 
         /// <summary>
         /// Gets or sets a value indicating whether the user account is active.
         /// Deactivated users cannot log into the system.
         /// </summary>
         public bool IsActive { get; set; } = true;
+=======
+>>>>>>> origin/master
 
         /// <summary>
         /// Gets or sets the collection of blog posts written by this user.
