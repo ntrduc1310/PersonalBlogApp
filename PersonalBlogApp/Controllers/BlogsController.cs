@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlogApp.Filters;
@@ -14,6 +14,9 @@ namespace PersonalBlogApp.Controllers
         private readonly IBlogService _blogService;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the BlogsController.
+        /// </summary>
         public BlogsController(IBlogService blogService, UserManager<ApplicationUser> userManager)
         {
             _blogService = blogService;

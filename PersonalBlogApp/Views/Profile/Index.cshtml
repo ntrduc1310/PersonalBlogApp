@@ -1,0 +1,194 @@
+@model PersonalBlogApp.Models.ApplicationUser
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    var roles = await UserManager.GetRolesAsync(Model);
+    var roleName = roles.FirstOrDefault() ?? "User";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <a href="/" class="text-decoration-none text-muted mb-3 d-inline-block">
+                &larr; Quay lại trang chủ
+            </a>
+
+            <!-- Success/Error Alerts -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-primary bg-gradient text-white p-4 text-center">
+                    <h4 class="mb-1 fw-bold">Thông tin tài khoản</h4>
+                    <small class="opacity-75">Quản lý và cập nhật ảnh đại diện cá nhân.</small>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    
+                    <!-- Avatar Section -->
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                            {
+                                <img id="avatar-preview" src="@Model.AvatarUrl" class="rounded-circle img-thumbnail shadow-sm" 
+                                     style="width: 140px; height: 140px; object-fit: cover;" alt="Avatar" />
+                            }
+                            else
+                            {
+                                var initial = Model.Email?.Substring(0, 1).ToUpper() ?? "U";
+                                <div id="avatar-placeholder" class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm mx-auto" 
+                                     style="width: 140px; height: 140px; font-size: 3.5rem;">
+                                    @initial
+                                </div>
+                                <img id="avatar-preview" class="rounded-circle img-thumbnail shadow-sm d-none" 
+                                     style="width: 140px; height: 140px; object-fit: cover;" alt="Avatar" />
+                            }
+                            <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-premium-primary border border-2 border-white px-2 py-1" style="font-size: 0.75rem;">
+                                @roleName
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- User Detail Fields (Readonly) -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-muted">Email tài khoản</label>
+                        <input type="text" class="form-control form-control-custom bg-light" value="@Model.Email" readonly />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-muted">Vai trò hệ thống</label>
+                        <input type="text" class="form-control form-control-custom bg-light" value="@(roleName == "Admin" ? "Quản trị viên (Admin)" : "Người dùng (User)")" readonly />
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25" />
+
+                    <!-- Avatar Upload Form -->
+                    <form asp-controller="Profile" asp-action="UploadAvatar" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-dark">Tải lên ảnh đại diện mới</label>
+                            <input id="avatar-input" type="file" name="avatarFile" class="form-control form-control-custom" accept=".jpg,.jpeg,.png,.gif" required />
+                            <div class="form-text mt-2 text-muted" style="font-size: 0.8rem;">
+                                <i class="bi bi-info-circle me-1"></i>Chấp nhận định dạng file <strong>.jpg, .jpeg, .png, .gif</strong>. Dung lượng tối đa <strong>10 MB</strong>.
+                            </div>
+                            <div id="client-error" class="text-danger mt-2 small fw-semibold d-none"></div>
+                            <div class="text-center mt-3">
+                                <button type="button" id="btn-cancel-preview" class="btn btn-sm btn-outline-secondary d-none">
+                                    <i class="bi bi-x-circle me-1"></i>Hủy chọn
+                                </button>
+                            </div>
+                            
+                            <!-- Validation Summary for File upload -->
+                            <div asp-validation-summary="All" class="text-danger mt-3 small fw-semibold"></div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button id="btn-upload" type="submit" class="btn btn-premium-primary py-2-5 rounded-3 fw-semibold">
+                                <i class="bi bi-cloud-upload-fill me-2"></i>Cập nhật ảnh đại diện
+                            </button>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('avatar-input').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const previewImg = document.getElementById('avatar-preview');
+            const placeholder = document.getElementById('avatar-placeholder');
+            const clientError = document.getElementById('client-error');
+            const btnUpload = document.getElementById('btn-upload');
+            const btnCancel = document.getElementById('btn-cancel-preview');
+
+            // Reset client errors and enable upload button by default
+            clientError.classList.add('d-none');
+            clientError.textContent = '';
+            btnUpload.disabled = false;
+
+            if (!file) {
+                resetPreview();
+                return;
+            }
+
+            // Client-side Validation: File Size limit to 10MB
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                clientError.textContent = 'Dung lượng file vượt quá giới hạn 10MB.';
+                clientError.classList.remove('d-none');
+                btnUpload.disabled = true;
+                resetPreview(false); // reset without clearing input
+                return;
+            }
+
+            // Client-side Validation: File Extension
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                clientError.textContent = 'Định dạng file không hợp lệ. Chỉ hỗ trợ .jpg, .jpeg, .png, .gif.';
+                clientError.classList.remove('d-none');
+                btnUpload.disabled = true;
+                resetPreview(false);
+                return;
+            }
+
+            // Live Image Preview using FileReader
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                if (placeholder) {
+                    placeholder.classList.add('d-none');
+                }
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('d-none');
+                btnCancel.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        const originalAvatarUrl = '@(Model.AvatarUrl ?? "")';
+
+        function resetPreview(clearInput = true) {
+            const previewImg = document.getElementById('avatar-preview');
+            const placeholder = document.getElementById('avatar-placeholder');
+            const btnCancel = document.getElementById('btn-cancel-preview');
+            const input = document.getElementById('avatar-input');
+
+            if (clearInput) {
+                input.value = '';
+                btnCancel.classList.add('d-none');
+            }
+
+            if (originalAvatarUrl) {
+                previewImg.src = originalAvatarUrl;
+                previewImg.classList.remove('d-none');
+                if (placeholder) placeholder.classList.add('d-none');
+            } else {
+                previewImg.classList.add('d-none');
+                if (placeholder) placeholder.classList.remove('d-none');
+            }
+        }
+
+        document.getElementById('btn-cancel-preview').addEventListener('click', function() {
+            resetPreview(true);
+            const clientError = document.getElementById('client-error');
+            clientError.classList.add('d-none');
+            clientError.textContent = '';
+            document.getElementById('btn-upload').disabled = false;
+        });
+    </script>
+}

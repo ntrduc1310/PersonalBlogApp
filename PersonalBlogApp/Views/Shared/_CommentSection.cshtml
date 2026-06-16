@@ -63,38 +63,46 @@
             foreach (var comment in Model.Comments)
             {
                 <div class="d-flex comment-item" id="comment-@comment.Id">
-                    <!-- Avatar mặc định (Chữ cái đầu của Email) -->
+                    <!-- Avatar mặc định hoặc tùy biến -->
                     <div class="flex-shrink-0">
-                        <div class="bg-secondary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
-                             style="width: 44px; height: 44px; font-size: 1.1rem; background: #94a3b8 !important;">
-                            @(comment.User?.Email?.Substring(0, 1).ToUpper() ?? "U")
-                        </div>
+                        @if (comment.User != null && !string.IsNullOrEmpty(comment.User.AvatarUrl))
+                        {
+                            <img src="@comment.User.AvatarUrl" class="rounded-circle shadow-sm border border-1 border-light" 
+                                 style="width: 44px; height: 44px; object-fit: cover;" alt="Avatar" />
+                        }
+                        else
+                        {
+                            <div class="bg-secondary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                                 style="width: 44px; height: 44px; font-size: 1.1rem; background: #94a3b8 !important;">
+                                @(comment.User?.Email?.Substring(0, 1).ToUpper() ?? "U")
+                            </div>
+                        }
                     </div>
 
                     <!-- Nội dung bình luận -->
                     <div class="flex-grow-1 ms-3">
                         <div class="comment-bubble position-relative">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2 gap-3">
                                 <strong class="text-primary small">@(comment.User?.Email ?? "Ẩn danh")</strong>
-                                <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>@comment.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                    <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>@comment.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                                    
+                                    @if (User.Identity != null && User.Identity.IsAuthenticated &&
+                                         (User.IsInRole("Admin") || comment.UserId == UserManager.GetUserId(User)))
+                                    {
+                                        <form asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" method="post" class="d-inline delete-comment-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-0 rounded-circle"
+                                                    title="Xóa bình luận"
+                                                    onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');"
+                                                    style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">
+                                                <i class="bi bi-trash fs-7"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
                             </div>
                             <p class="mb-0 text-dark small" style="white-space: pre-line; line-height: 1.6;">@comment.Content</p>
-
-                            <!-- Nút xóa chỉ hiện đối với chủ comment hoặc Admin -->
-                            @if (User.Identity != null && User.Identity.IsAuthenticated &&
-                                 (User.IsInRole("Admin") || comment.UserId == UserManager.GetUserId(User)))
-                            {
-                                <div class="position-absolute end-0 top-0 mt-3 me-3">
-                                    <form asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" method="post" class="d-inline delete-comment-form">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1 rounded-circle"
-                                                title="Xóa bình luận"
-                                                onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            }
                         </div>
                     </div>
                 </div>
