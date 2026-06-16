@@ -1,4 +1,4 @@
-﻿using PersonalBlogApp.Models;
+using PersonalBlogApp.Models;
 using PersonalBlogApp.ViewModels;
 
 namespace PersonalBlogApp.Services
@@ -12,7 +12,9 @@ namespace PersonalBlogApp.Services
 
         Task DeleteBlogAsync(int id);
         Task<bool> IsUserAuthorizedAsync(int id, string userId, bool isAdmin);
-        Task AddCommentAsync(CommentCreateVM model, string userId);
-
+        Task<Comment> AddCommentAsync(CommentCreateVM model, string userId);
+        Task<Comment?> GetCommentAsync(int id);
+        Task DeleteCommentAsync(int id);
+        Task<bool> IsCommentOwnerOrAdminAsync(int commentId, string userId, bool isAdmin);
     }
 }
