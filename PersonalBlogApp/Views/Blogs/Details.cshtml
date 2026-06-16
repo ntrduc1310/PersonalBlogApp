@@ -1,0 +1,31 @@
+﻿@model PersonalBlogApp.Models.Blog
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="bg-white p-5 rounded shadow-sm border">
+        <!-- 1. Tiêu đề lớn -->
+        <h1 class="display-5 fw-bold text-primary mb-3">@Model.Title</h1>
+
+        <!-- 2. Thông tin tác giả & ngày đăng -->
+        <div class="d-flex align-items-center text-muted my-3 border-bottom pb-3">
+            <span class="me-3">Tác giả: <strong>@Model.User?.Email</strong></span>
+            <span class="me-3">|</span>
+            <span class="me-3">Đăng lúc: @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+            <span class="me-3">|</span>
+            <span class="badge bg-info text-dark">Độ ưu tiên: @Model.Priority</span>
+        </div>
+
+        <!-- 3. Nội dung bài viết (Render HTML an toàn từ TinyMCE) -->
+        <div class="blog-content mt-4" style="line-height: 1.8; font-size: 1.1rem;">
+            @Html.Raw(Model.Content)
+        </div>
+
+        <!-- 4. Nút quay lại danh sách -->
+        <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+            <a asp-action="Index" class="btn btn-secondary">← Quay lại danh sách</a>
+        </div>
+    </div>
+</div>
