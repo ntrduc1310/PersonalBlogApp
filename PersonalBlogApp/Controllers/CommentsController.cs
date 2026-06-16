@@ -7,18 +7,29 @@ using PersonalBlogApp.ViewModels;
 
 namespace PersonalBlogApp.Controllers
 {
-    [Authorize] // Task 4.1: Bắt buộc đăng nhập mới được Comment
+    /// <summary>
+    /// Controller handling creation and deletion of blog comments.
+    /// Access is restricted to authenticated users.
+    /// </summary>
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly IBlogService _blogService;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the CommentsController.
+        /// </summary>
         public CommentsController(IBlogService blogService, UserManager<ApplicationUser> userManager)
         {
             _blogService = blogService;
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Creates a new comment for a blog post.
+        /// Supports AJAX requests (XMLHttpRequest) returning JSON, or falls back to traditional redirects.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CommentCreateVM model)
@@ -58,16 +69,21 @@ namespace PersonalBlogApp.Controllers
                     createdAt = comment.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
                     userEmail = comment.User?.Email ?? "Ẩn danh",
                     avatarInitial = (comment.User?.Email?.Substring(0, 1).ToUpper() ?? "U"),
+                    avatarUrl = comment.User?.AvatarUrl,
                     message = "Thêm bình luận thành công!"
                 });
             }
 
             TempData["SuccessMessage"] = "Đã thêm bình luận thành công!";
 
-            // done=> đẩy người dùng quay lại đúng bài viết đó
+            // Done: Redirect the user back to the corresponding blog post
             return RedirectToAction("Details", "Blogs", new { id = model.BlogId });
         }
 
+        /// <summary>
+        /// Deletes a comment by ID if the current user is the owner or an admin.
+        /// Supports AJAX requests returning JSON, or falls back to traditional redirects.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -88,7 +104,7 @@ namespace PersonalBlogApp.Controllers
             }
             var isAdmin = User.IsInRole("Admin");
             
-            // Kiểm tra quyền Server-side: Phải là chủ bình luận hoặc Admin
+            // Server-side authorization check: Must be the comment owner or an Admin
             var isAuthorized = await _blogService.IsCommentOwnerOrAdminAsync(id, userId, isAdmin);
             if (!isAuthorized)
             {
@@ -96,7 +112,7 @@ namespace PersonalBlogApp.Controllers
                 {
                     return StatusCode(403, new { success = false, message = "Không có quyền xóa bình luận này." });
                 }
-                // Trả về lỗi 403 forbidden ( Không có quyền)
+                // Return 403 Forbidden error (unauthorized)
                 return Forbid();
             }
             var BlogId = comment.BlogId;
@@ -105,7 +121,7 @@ namespace PersonalBlogApp.Controllers
             
             TempData["SuccessMessage"] = "Đã xóa bình luận thành công!";
 
-            // Neu request gui bang AJAX (IsAjaxRequest())
+            // AJAX response fallback
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return Json(new { success = true, message = "Xóa bình luận thành công." });

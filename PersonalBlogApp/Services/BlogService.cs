@@ -8,6 +8,9 @@ namespace PersonalBlogApp.Services
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the BlogService.
+        /// </summary>
         public BlogService(ApplicationDbContext context)
         {
             _context = context;

@@ -182,6 +182,11 @@ h1, h2, h3, h4, h5, h6 {
     transition: var(--transition-smooth);
 }
 
+.bg-premium-primary {
+    background: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end)) !important;
+    color: #ffffff !important;
+}
+
 .btn-premium-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);

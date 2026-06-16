@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace PersonalBlogApp.Data
 {
+    /// <summary>
+    /// Static class responsible for running pending migrations and seeding role/user/blog database records.
+    /// </summary>
     public static class DbInitializer
     {
+        /// <summary>
+        /// Applies migrations and seeds roles (Admin, User), default users, and sample blog posts.
+        /// </summary>
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
             using var context = new ApplicationDbContext(
@@ -138,7 +144,7 @@ namespace PersonalBlogApp.Data
                         Content = "<p>EF Core là một O/RM mạnh mẽ cho phép làm việc với database thông qua các đối tượng .NET.</p>",
                         Priority = 4,
                         CreatedAt = DateTime.UtcNow.AddMinutes(-20),
-                        UserId = adminUser.Id
+                        UserId = adminUser.Id   
                     }
                 );
 
