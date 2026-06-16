@@ -1,0 +1,65 @@
+﻿@model PersonalBlogApp.Models.Blog
+
+<div class="mt-5 pt-4 border-top">
+    <h4 class="fw-bold mb-4">Bình luận (@Model.Comments.Count)</h4>
+
+    <!-- Form viết bình luận mới (Chỉ hiện khi đã đăng nhập) -->
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <div class="card border-0 bg-light shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <form asp-controller="Comments" asp-action="Create" method="post">
+                    <input type="hidden" name="BlogId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <textarea name="Content" class="form-control border-0 bg-white" rows="3"
+                                  placeholder="Viết bình luận của bạn..." required></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill">Gửi bình luận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning rounded-4 shadow-sm">
+            Vui lòng <a href="/Identity/Account/Login" class="alert-link">đăng nhập</a> để tham gia bình luận.
+        </div>
+    }
+
+    <!-- Danh sách các bình luận cũ -->
+    <div class="comment-list">
+        @if (!Model.Comments.Any())
+        {
+            <p class="text-muted fst-italic text-center py-4">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
+        }
+        else
+        {
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="d-flex mb-4">
+                    <!-- Avatar mặc định (Chữ cái đầu của Email) -->
+                    <div class="flex-shrink-0">
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                             style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            @(comment.User?.Email?.Substring(0, 1).ToUpper() ?? "U")
+                        </div>
+                    </div>
+
+                    <!-- Nội dung bình luận -->
+                    <div class="flex-grow-1 ms-3">
+                        <div class="bg-light p-3 rounded-4 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-primary">@(comment.User?.Email ?? "Ẩn danh")</strong>
+                                <small class="text-muted">@comment.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <p class="mb-0 text-dark" style="white-space: pre-line;">@comment.Content</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
