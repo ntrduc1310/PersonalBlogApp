@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalBlogApp.Models
 {
@@ -17,12 +16,10 @@ namespace PersonalBlogApp.Models
 
         [Required]
         public string UserId { get; set; } = string.Empty;
-        [ForeignKey("UserId")]
         public ApplicationUser? User { get; set; }
 
         [Required]
         public int BlogId { get; set; }
-        [ForeignKey("BlogId")]
         public Blog? Blog { get; set; }
     }
 }

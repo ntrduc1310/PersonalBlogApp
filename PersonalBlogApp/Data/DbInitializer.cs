@@ -60,7 +60,6 @@ namespace PersonalBlogApp.Data
             }
             else
             {
-                // Ensure existing admin has the role
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
@@ -93,7 +92,6 @@ namespace PersonalBlogApp.Data
             }
             else
             {
-                // Ensure existing user has the role
                 if (!await userManager.IsInRoleAsync(regularUser, "User"))
                 {
                     await userManager.AddToRoleAsync(regularUser, "User");
