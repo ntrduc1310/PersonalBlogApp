@@ -333,6 +333,51 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow-md);
 }
 
+/* Premium Pagination Styling */
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-item .page-link {
+    color: var(--color-text-body);
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+}
+
+.pagination .page-item:first-child .page-link {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.pagination .page-item:last-child .page-link {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.pagination .page-item .page-link:hover {
+    color: var(--color-primary-end);
+    background-color: rgba(99, 102, 241, 0.05);
+    border-color: var(--color-border-hover);
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end)) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.15);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--color-text-muted);
+    opacity: 0.5;
+    background-color: transparent;
+    border-color: var(--color-border);
+}
+
 /* Footer style */
 .footer-custom {
     margin-top: auto;

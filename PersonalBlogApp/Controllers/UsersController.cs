@@ -19,9 +19,7 @@ namespace PersonalBlogApp.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        /// <summary>
         /// Initializes a new instance of the UsersController.
-        /// </summary>
         public UsersController(
             UserManager<ApplicationUser> userManager, 
             RoleManager<IdentityRole> roleManager,

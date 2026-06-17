@@ -7,29 +7,23 @@ using PersonalBlogApp.ViewModels;
 
 namespace PersonalBlogApp.Controllers
 {
-    /// <summary>
     /// Controller handling creation and deletion of blog comments.
     /// Access is restricted to authenticated users.
-    /// </summary>
     [Authorize]
     public class CommentsController : Controller
     {
         private readonly IBlogService _blogService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        /// <summary>
         /// Initializes a new instance of the CommentsController.
-        /// </summary>
         public CommentsController(IBlogService blogService, UserManager<ApplicationUser> userManager)
         {
             _blogService = blogService;
             _userManager = userManager;
         }
 
-        /// <summary>
         /// Creates a new comment for a blog post.
         /// Supports AJAX requests (XMLHttpRequest) returning JSON, or falls back to traditional redirects.
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CommentCreateVM model)
@@ -80,10 +74,9 @@ namespace PersonalBlogApp.Controllers
             return RedirectToAction("Details", "Blogs", new { id = model.BlogId });
         }
 
-        /// <summary>
+
         /// Deletes a comment by ID if the current user is the owner or an admin.
         /// Supports AJAX requests returning JSON, or falls back to traditional redirects.
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -126,7 +119,6 @@ namespace PersonalBlogApp.Controllers
             {
                 return Json(new { success = true, message = "Xóa bình luận thành công." });
             }
-
             return RedirectToAction("Details", "Blogs", new { id = BlogId });
         }   
     }

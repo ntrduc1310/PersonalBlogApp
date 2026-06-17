@@ -1,28 +1,35 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalBlogApp.Data;
 using PersonalBlogApp.Models;
-using PersonalBlogApp.ViewModels; 
+using PersonalBlogApp.ViewModels;
+using X.PagedList;
+
 namespace PersonalBlogApp.Services
 {
+    /// Service layer handling all business logic and data access operations for Blogs and Comments.
     public class BlogService : IBlogService
     {
         private readonly ApplicationDbContext _context;
 
-        /// <summary>
         /// Initializes a new instance of the BlogService.
-        /// </summary>
         public BlogService(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Blog>> GetBlogsAsync(string userId, bool isAdmin, string sort = "")
+        /// Retrieves all blogs from the database with pagination, optionally sorted by priority or creation date.
+        /// Uses IQueryable for deferred query execution under the hood and applies Skip/Take at the database level.
+        public async Task<IPagedList<Blog>> GetBlogsAsync(string userId, bool isAdmin, string sort, int pageNumber, int pageSize)
         {
-            // Sử dụng IQueryable để tối ưu hiệu năng truy vấn dữ liệu (Deferred Execution)
+            // Use IQueryable to defer database query execution and compile optimal SQL queries.
             IQueryable<Blog> query = _context.Blogs.Include(b => b.User);
 
+            if (!isAdmin)
+            {
+                query = query.Where(b => b.UserId == userId);
+            }
 
-            // Xử lý logic sắp xếp (Sắp xếp theo độ ưu tiên giảm dần hoặc mới nhất)
+            // Handle sorting requests: sort either by priority (descending) or creation date (newest first).
             if (sort == "priority")
             {
                 query = query.OrderByDescending(b => b.Priority)
@@ -33,7 +40,7 @@ namespace PersonalBlogApp.Services
                 query = query.OrderByDescending(b => b.CreatedAt);
             }
 
-            return await query.ToListAsync();
+            return await query.ToPagedListAsync(pageNumber, pageSize);
         }
 
         public async Task<Blog?> GetBlogByIdAsync(int id)

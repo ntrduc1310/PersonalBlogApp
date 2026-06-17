@@ -1,4 +1,5 @@
-@model IEnumerable<PersonalBlogApp.Models.Blog>
+@model X.PagedList.IPagedList<PersonalBlogApp.Models.Blog>
+@using X.PagedList.Mvc.Core
 @inject Microsoft.AspNetCore.Identity.UserManager<PersonalBlogApp.Models.ApplicationUser> UserManager
 
 @{
@@ -150,6 +151,16 @@
                     </div>
                 </div>
             }
+        </div>
+
+        <!-- Pagination Navigation Controls -->
+        <div class="d-flex justify-content-center mt-5">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sort = currentSort }),
+                new X.PagedList.Web.Common.PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" },
+                    UlElementClasses = new string[] { "pagination", "justify-content-center" }
+                })
         </div>
     }
 </div>

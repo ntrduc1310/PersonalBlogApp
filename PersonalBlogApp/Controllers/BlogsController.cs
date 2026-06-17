@@ -23,15 +23,21 @@ namespace PersonalBlogApp.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Blogs?sort=priority
-        public async Task<IActionResult> Index(string sort)
+        /// <summary>
+        /// GET: /Blogs?sort=priority&page=1
+        /// Fetches the index page displaying all blog posts with pagination.
+        /// Supports query string parameters to filter, sort, and page the blogs.
+        /// </summary>
+        public async Task<IActionResult> Index(string sort, int? page)
         {
             var currentUserId = _userManager.GetUserId(User);
             var isAdmin = User.IsInRole("Admin");
+            int pageNumber = page ?? 1;
+            int pageSize = 10;
 
-            var blogs = await _blogService.GetBlogsAsync(currentUserId ?? string.Empty, isAdmin, sort);
+            var blogs = await _blogService.GetBlogsAsync(currentUserId ?? string.Empty, isAdmin, sort, pageNumber, pageSize);
 
-            // Dùng ViewData để lưu giữ trạng thái sắp xếp hiện tại truyền ra View hiển thị active nút
+            // Store the current sort filter key in ViewData to conditionally style sorting controls
             ViewData["CurrentSort"] = sort;
             return View(blogs);
         }
