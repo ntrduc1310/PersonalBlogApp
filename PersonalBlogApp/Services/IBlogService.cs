@@ -10,7 +10,7 @@ namespace PersonalBlogApp.Services
     public interface IBlogService
     {
         /// Retrieves all blogs from the database with pagination, optionally filtered or sorted.
-        Task<IPagedList<Blog>> GetBlogsAsync(string userId, bool isAdmin, string sort, int pageNumber, int pageSize);
+        Task<IPagedList<Blog>> GetBlogsAsync(string userId, bool isAdmin, string? search, int? priority, string? sort, int pageNumber, int pageSize);
 
         /// Retrieves a single blog by ID, including its author details and associated comments
         Task<Blog?> GetBlogByIdAsync(int id);

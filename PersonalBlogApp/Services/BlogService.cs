@@ -19,7 +19,7 @@ namespace PersonalBlogApp.Services
 
         /// Retrieves all blogs from the database with pagination, optionally sorted by priority or creation date.
         /// Uses IQueryable for deferred query execution under the hood and applies Skip/Take at the database level.
-        public async Task<IPagedList<Blog>> GetBlogsAsync(string userId, bool isAdmin, string sort, int pageNumber, int pageSize)
+        public async Task<IPagedList<Blog>> GetBlogsAsync(string userId, bool isAdmin, string? search, int? priority, string? sort, int pageNumber, int pageSize)
         {
             // Use IQueryable to defer database query execution and compile optimal SQL queries.
             IQueryable<Blog> query = _context.Blogs.Include(b => b.User);
@@ -27,6 +27,17 @@ namespace PersonalBlogApp.Services
             if (!isAdmin)
             {
                 query = query.Where(b => b.UserId == userId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string searchTerm = $"%{search}%";
+                query = query.Where(b => EF.Functions.Like(b.Title, searchTerm) || EF.Functions.Like(b.Content, searchTerm));
+            }
+
+            if (priority.HasValue)
+            {
+                query = query.Where(b => b.Priority == priority.Value);
             }
 
             // Handle sorting requests: sort either by priority (descending) or creation date (newest first).

@@ -5,6 +5,8 @@
 @{
     ViewData["Title"] = "Danh Sách Bài Viết";
     var currentSort = ViewData["CurrentSort"] as string;
+    var currentSearch = ViewData["CurrentSearch"] as string;
+    var currentPriority = ViewData["CurrentPriority"] as int?;
     var currentUserId = UserManager.GetUserId(User);
 }
 
@@ -26,7 +28,7 @@
     }
 
     <!-- Page Title & Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h2 class="fw-bold m-0 page-title" style="font-size: 2.2rem;">
                 Bài viết của bạn
@@ -38,13 +40,13 @@
             <!-- Priority Sort -->
             @if (currentSort == "priority")
             {
-                <a asp-action="Index" class="btn btn-premium-outline px-4">
+                <a asp-action="Index" asp-route-search="@currentSearch" asp-route-priority="@currentPriority" class="btn btn-premium-outline px-4">
                     <i class="bi bi-clock-history me-1"></i> Mới nhất
                 </a>
             }
             else
             {
-                <a asp-action="Index" asp-route-sort="priority" class="btn btn-premium-outline px-4">
+                <a asp-action="Index" asp-route-sort="priority" asp-route-search="@currentSearch" asp-route-priority="@currentPriority" class="btn btn-premium-outline px-4">
                     <i class="bi bi-sort-numeric-down-alt me-1"></i> Độ ưu tiên
                 </a>
             }
@@ -54,6 +56,39 @@
             </a>
         </div>
     </div>
+
+    <!-- Search & Filter Form -->
+    <form method="get" asp-action="Index" class="row g-2 mb-5 align-items-center">
+        @if (!string.IsNullOrEmpty(currentSort))
+        {
+            <input type="hidden" name="sort" value="@currentSort" />
+        }
+        
+        <div class="col-md-6 col-sm-12">
+            <div class="input-group" style="height: 42px;">
+                <span class="input-group-text bg-white border-end-0 rounded-start-3"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0 ps-0 rounded-end-3" placeholder="Tìm kiếm theo tiêu đề hoặc nội dung..." value="@currentSearch">
+            </div>
+        </div>
+        
+        <div class="col-md-4 col-sm-8">
+            <select name="priority" class="form-select rounded-3" style="height: 42px;">
+                <option value="">Tất cả độ ưu tiên</option>
+                <option value="5" selected="@(currentPriority == 5 ? "selected" : null)">5 - Rất cao</option>
+                <option value="4" selected="@(currentPriority == 4 ? "selected" : null)">4 - Cao</option>
+                <option value="3" selected="@(currentPriority == 3 ? "selected" : null)">3 - Trung bình</option>
+                <option value="2" selected="@(currentPriority == 2 ? "selected" : null)">2 - Thấp</option>
+                <option value="1" selected="@(currentPriority == 1 ? "selected" : null)">1 - Rất thấp</option>
+            </select>
+        </div>
+        
+        <div class="col-md-2 col-sm-4 d-flex gap-2">
+            <button type="submit" class="btn btn-premium-primary flex-grow-1" style="border-radius: 12px; height: 42px; padding: 0;">Lọc</button>
+            <a asp-action="Index" class="btn btn-light text-danger border-0 d-flex align-items-center justify-content-center shadow-sm hover-up" title="Xóa bộ lọc" style="border-radius: 12px; width: 42px; height: 42px; padding: 0;">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </form>
 
     @if (!Model.Any())
     {
@@ -155,7 +190,7 @@
 
         <!-- Pagination Navigation Controls -->
         <div class="d-flex justify-content-center mt-5">
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sort = currentSort }),
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sort = currentSort, search = currentSearch, priority = currentPriority }),
                 new X.PagedList.Web.Common.PagedListRenderOptions {
                     LiElementClasses = new string[] { "page-item" },
                     PageClasses = new string[] { "page-link" },
