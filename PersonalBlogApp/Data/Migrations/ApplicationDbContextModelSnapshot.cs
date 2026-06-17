@@ -181,9 +181,6 @@ namespace PersonalBlogApp.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -261,7 +258,7 @@ namespace PersonalBlogApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Blogs", (string)null);
+                    b.ToTable("Blogs");
                 });
 
             modelBuilder.Entity("PersonalBlogApp.Models.Comment", b =>
@@ -293,7 +290,7 @@ namespace PersonalBlogApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
