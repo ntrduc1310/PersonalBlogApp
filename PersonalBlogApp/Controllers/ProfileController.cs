@@ -13,10 +13,8 @@ using System.Threading.Tasks;
 
 namespace PersonalBlogApp.Controllers
 {
-    /// <summary>
     /// Controller handling user profile viewing and custom avatar file uploads.
     /// Access is restricted to authenticated users.
-    /// </summary>
     [Authorize]
     [Route("profile")]
     public class ProfileController : Controller
@@ -24,18 +22,14 @@ namespace PersonalBlogApp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        /// <summary>
         /// Initializes a new instance of the ProfileController.
-        /// </summary>
         public ProfileController(UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
         }
 
-        /// <summary>
-        /// Renders the profile page for the currently logged-in user.
-        /// </summary>
+        /// Renders the profile page for the currently logged-in user.  
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -46,12 +40,10 @@ namespace PersonalBlogApp.Controllers
             }
 
             return View(user);
-        }
-
-        /// <summary>
+        }  
+        
         /// Handles custom avatar image uploads. Validates file size (max 10MB) and file extension,
         /// deletes any previous avatar, saves the new image to server storage, and updates user database record.
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadAvatar(IFormFile? avatarFile)
