@@ -6,29 +6,22 @@ namespace PersonalBlogApp.Models
     /// <summary>
     /// Custom identity user model extended from IdentityUser.
     /// Includes fields for custom profile avatar URL and active/deactive status.
-    /// </summary>
+   
     public class ApplicationUser : IdentityUser
     {
-        /// <summary>
-        /// Gets or sets the relative or absolute URL to the user's avatar image.
-        /// </summary>
+
+        /// Gets or sets the relative or absolute URL to the user's avatar image
         [MaxLength]
         public string? AvatarUrl { get; set; }
 
-        /// <summary>
         /// Gets or sets a value indicating whether the user account is active.
-        /// Deactivated users cannot log into the system.
-        /// </summary>
+        /// Deactivated users cannot log into the system
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets the collection of blog posts written by this user.
-        /// </summary>
+        ///Gets or sets the collection of blog posts written by this user.
         public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
 
-        /// <summary>
-        /// Gets or sets the collection of comments posted by this user.
-        /// </summary>
+        /// Gets or sets the collection of comments posted by this user
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
