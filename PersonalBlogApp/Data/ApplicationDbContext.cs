@@ -9,27 +9,17 @@ namespace PersonalBlogApp.Data
     /// </summary>
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        /// <summary>
-        /// Initializes a new instance of the ApplicationDbContext with given options.
-        /// </summary>
+
+        /// Initializes a new instance of the ApplicationDbContext with given options
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-
-        /// <summary>
         /// Gets or sets the database set for Blogs.
-        /// </summary>
         public DbSet<Blog> Blogs { get; set; }
-
-        /// <summary>
         /// Gets or sets the database set for Comments.
-        /// </summary>
         public DbSet<Comment> Comments { get; set; }
-
-        /// <summary>
         /// Configures database table relationships, foreign keys, and delete behaviors on model creation.
-        /// </summary>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
