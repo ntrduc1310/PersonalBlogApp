@@ -52,6 +52,7 @@ namespace PersonalBlogApp.Services
             }
 
             return await query.ToPagedListAsync(pageNumber, pageSize);
+            //automatic render OFFSET and LIMIT or SKIP and TAKE to handle 10 currently blogs on display page
         }
 
         public async Task<Blog?> GetBlogByIdAsync(int id)

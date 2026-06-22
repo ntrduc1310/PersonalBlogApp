@@ -14,20 +14,18 @@ namespace PersonalBlogApp.Controllers
         private readonly IBlogService _blogService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        /// <summary>
+       
         /// Initializes a new instance of the BlogsController.
-        /// </summary>
         public BlogsController(IBlogService blogService, UserManager<ApplicationUser> userManager)
         {
             _blogService = blogService;
             _userManager = userManager;
         }
 
-        /// <summary>
+       
         /// GET: /Blogs?sort=priority&page=1
         /// Fetches the index page displaying all blog posts with pagination.
         /// Supports query string parameters to filter, sort, and page the blogs.
-        /// </summary>
         public async Task<IActionResult> Index([FromQuery] string? search, [FromQuery] int? priority, [FromQuery] string? sort, [FromQuery] int? page)
         {
             var currentUserId = _userManager.GetUserId(User);
