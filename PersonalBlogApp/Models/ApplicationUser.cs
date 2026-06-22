@@ -11,7 +11,7 @@ namespace PersonalBlogApp.Models
     {
 
         /// Gets or sets the relative or absolute URL to the user's avatar image
-        [MaxLength]
+        [MaxLength(500)]
         public string? AvatarUrl { get; set; }
 
         /// Gets or sets a value indicating whether the user account is active.

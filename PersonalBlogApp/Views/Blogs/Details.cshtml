@@ -1,4 +1,5 @@
 @model PersonalBlogApp.Models.Blog
+@using Ganss.Xss
 @using Microsoft.AspNetCore.Identity
 @using PersonalBlogApp.Models
 @inject UserManager<ApplicationUser> UserManager
@@ -119,7 +120,11 @@
 
                 <!-- Article Content -->
                 <div class="content-body">
-                    @Html.Raw(Model.Content)
+                    @{
+                        var sanitizer = new HtmlSanitizer();
+                        var sanitizedContent = sanitizer.Sanitize(Model.Content);
+                    }
+                    @Html.Raw(sanitizedContent)
                 </div>
             </article>
 
