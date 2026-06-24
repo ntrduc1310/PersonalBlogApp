@@ -19,7 +19,7 @@ namespace PersonalBlogApp.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        /// Initializes a new instance of the UsersController.
+
         public UsersController(
             UserManager<ApplicationUser> userManager, 
             RoleManager<IdentityRole> roleManager,
@@ -228,5 +228,5 @@ namespace PersonalBlogApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-    }
+     }
 }

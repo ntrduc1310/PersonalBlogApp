@@ -25,7 +25,7 @@ namespace PersonalBlogApp.Controllers
        
         /// GET: /Blogs?sort=priority&page=1
         /// Fetches the index page displaying all blog posts with pagination.
-        /// Supports query string parameters to filter, sort, and page the blogs.
+        /// Supports query string parameters by model binding to automactly gán filter, sort, and page the blogs.
         public async Task<IActionResult> Index([FromQuery] string? search, [FromQuery] int? priority, [FromQuery] string? sort, [FromQuery] int? page)
         {
             var currentUserId = _userManager.GetUserId(User);
@@ -35,7 +35,7 @@ namespace PersonalBlogApp.Controllers
 
             var blogs = await _blogService.GetBlogsAsync(currentUserId ?? string.Empty, isAdmin, search, priority, sort, pageNumber, pageSize);
 
-            // Store the current sort filter key in ViewData to conditionally style sorting controls
+            // Store the current sort filter key in ViewData to know that is active sort filter key
             ViewData["CurrentSort"] = sort;
             ViewData["CurrentSearch"] = search;
             ViewData["CurrentPriority"] = priority;
