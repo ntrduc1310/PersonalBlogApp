@@ -36,7 +36,7 @@ namespace PersonalBlogApp.Controllers
             var blogs = await _blogService.GetBlogsAsync(currentUserId ?? string.Empty, isAdmin, search, priority, sort, pageNumber, pageSize);
 
             // Store the current sort filter key in ViewData to know that is active sort filter key
-            ViewData["CurrentSort"] = sort;
+                ViewData["CurrentSort"] = sort;
             ViewData["CurrentSearch"] = search;
             ViewData["CurrentPriority"] = priority;
             return View(blogs);
@@ -68,17 +68,17 @@ namespace PersonalBlogApp.Controllers
             var currentUserId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(currentUserId)) return Challenge();
 
-            await _blogService.CreateBlogAsync(model, currentUserId);
+            var blogId = await _blogService.CreateBlogAsync(model, currentUserId);
 
             TempData["SuccessMessage"] = "Đăng bài viết mới thành công!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", new { id = blogId });
         }
 
         // GET: /Blogs/Edit/5
         [AuthorizeBlogOwner] 
         public async Task<IActionResult> Edit(int id)
         {
-            var blog = await _blogService.GetBlogByIdAsync(id);
+            var blog = await _blogService.GetBlogByIdOnlyAsync(id);
             if (blog == null) return NotFound();
 
             var model = new BlogEditVM
@@ -98,13 +98,16 @@ namespace PersonalBlogApp.Controllers
         [AuthorizeBlogOwner]
         public async Task<IActionResult> Edit(int id, BlogEditVM model)
         {
-            if (id != model.Id) return NotFound();
+            if (id != model.Id) return NotFound(); //ktra chéo| đbao rằng id trong URL và form model.Id trùng nhau
             if (!ModelState.IsValid) return View(model);
 
             await _blogService.UpdateBlogAsync(model);
 
             TempData["SuccessMessage"] = "Cập nhật bài viết thành công!";
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+            //  return RedirectToAction(nameof(Edit), new { id = model.Id });
+
+            return RedirectToAction("Details", new { id = model.Id });
         }
 
         // GET: /Blogs/Delete/5

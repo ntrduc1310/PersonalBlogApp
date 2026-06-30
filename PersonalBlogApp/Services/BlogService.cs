@@ -50,24 +50,29 @@ namespace PersonalBlogApp.Services
             {
                 query = query.OrderByDescending(b => b.CreatedAt);
             }
-
+           // string generatedSql = query.ToQueryString();
+            //=>SQLS
             return await query.ToPagedListAsync(pageNumber, pageSize);
             //automatic render OFFSET and LIMIT or SKIP and TAKE to handle 10 currently blogs on display page
+            ////to change list co phan trang IpagedList<blog>
         }
 
-        public async Task<Blog?> GetBlogByIdAsync(int id)
+        public async Task<Blog?> GetBlogByIdAsync(int id)//Tai all list datas lquan request duy nhat
         {
             return await _context.Blogs
                 .Include(b => b.User)
-                // Sắp xếp bình luận mới nhất lên đầu ngay trong Include (Tính năng của EF Core 5+)
+                // Sắp xếp bình luận mới nhất lên đầu ngay trong Include 
                 .Include(b => b.Comments.OrderByDescending(c => c.CreatedAt))
                     .ThenInclude(c => c.User) // Tải thông tin người bình luận
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
-
+        public async Task<Blog?> GetBlogByIdOnlyAsync(int id)
+        {
+            return await _context.Blogs.FirstOrDefaultAsync(b => b.Id == id);
+        }
 
         // Ánh xạ dữ liệu từ ViewModel sang Model DB để tiến hành lưu mới
-        public async Task CreateBlogAsync(BlogCreateVM model, string userId)
+        public async Task<int> CreateBlogAsync(BlogCreateVM model, string userId)
         {
             var blog = new Blog
             {
@@ -77,11 +82,14 @@ namespace PersonalBlogApp.Services
                 CreatedAt = DateTime.UtcNow,
                 UserId = userId
             };
-
+            //hàng chờ thêm vào DB
             _context.Blogs.Add(blog);
+            //luân chuyển vào DB
             await _context.SaveChangesAsync();
-        }
 
+            return blog.Id;
+        }
+    
         // Lấy bài viết cũ ra và cập nhật thông tin theo dữ liệu chỉnh sửa của ViewModel
         public async Task UpdateBlogAsync(BlogEditVM model)
         {

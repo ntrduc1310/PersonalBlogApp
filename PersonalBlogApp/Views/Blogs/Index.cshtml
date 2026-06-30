@@ -1,10 +1,7 @@
-<!--Định nghĩa kiểu dữ liệu cho thuộc tính model của trang-->
 @model X.PagedList.IPagedList<PersonalBlogApp.Models.Blog>
 @using X.PagedList.Mvc.Core
 @inject Microsoft.AspNetCore.Identity.UserManager<PersonalBlogApp.Models.ApplicationUser> UserManager
 
-
-    <!--read from viewdata to biencucbo-->
 @{
     ViewData["Title"] = "Danh Sách Bài Viết";
     var currentSort = ViewData["CurrentSort"] as string;
@@ -12,7 +9,6 @@
     var currentPriority = ViewData["CurrentPriority"] as int?;
     var currentUserId = UserManager.GetUserId(User);
 }
-
 
 <div class="container mt-2">
     <!-- TempData Alerts -->
@@ -93,7 +89,7 @@
             </a>
         </div>
     </form>
-    <!--ktra ds rỗng-->
+        <!--ktra ds rỗng-->
     @if (!Model.Any())
     {
         <div class="card border-0 bg-white rounded-4 shadow-sm p-5 text-center">
@@ -110,8 +106,8 @@
     else
     {
         <div class="row g-4">
-            <!-- Duyet tung bai viet =>hthi blogs=>sinh ra thẻ html con  -->
             @foreach (var item in Model)
+            //duyệt qua danh sách và hiển thị từng bài viết
             {
                 <div class="col-lg-4 col-md-6">
                     <div class="card glass-card hover-up h-100 d-flex flex-column border-0" style="border-radius: var(--radius-lg);">

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -32,8 +32,6 @@ namespace PersonalBlogApp.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
         public string ReturnUrl { get; set; }
 
         [TempData]
@@ -41,88 +39,64 @@ namespace PersonalBlogApp.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-                            [Required]
+            [Required]
             [EmailAddress]
             public string Email { get; set; }
 
-                            [Required]
+            [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-                            [Display(Name = "Remember me?")]
+            [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            //  Kiểm tra xem có thông báo lỗi từ temp data của lần truy cập thất bại trước đó không, gán tbao lỗi đó vào ModelState để hiển thị cho người dùng.
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
+            // nếu returnUrl trống (không có trang cũ cần turnback),=> sẽ dẫn user về trchu (~/) sau khi login success
+
             returnUrl ??= Url.Content("~/");
 
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
+            // ghi nhận lại trang cũ mà user đang truy cập trước khi bị hệ thống ép quay lại trang login lưu lại vết trong form HTML
+            // nhằm chuyển hướng đúng trang cũ sau khi đăng nhập thành công
             ReturnUrl = returnUrl;
         } 
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            //Thiết lập trang mặc định trả về sau khi đăng nhập thành công là trang chủ nếu url trống 
             returnUrl ??= Url.Content("~/");
-            // Nạp lại ds đăng nhập ngoài để chuẩn bị render lại nếu đăng nhập thất bại 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-
-            //kiểm tra tính hợp lệ dữ liệu nhâp(như email đúng định dạng không, mật khẩu có trống không)
             if (ModelState.IsValid)
             {
-                //Hàm cốt lõi- gọi Identity kiểm tra tài khoản, mật khẩu dưới dtb 
-                //lockoutFailure: true nghĩa là kích hoạt khóa tài khoản tạm thời nếu gõ sai mật khẩu liên tiếp 5 lần 
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 
-
-                //TH1: đăng nhập thành công 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    //Hàm localRedirect sẽ gửi mã chuyển hướng HTTP 302 về Browser 
-                    // Browser lập tức chuyển sang trang được lưu trong returnurl
-                    // (VD: Trang chủ hoặc trang mà user đang cố vào trước đó)
-                    return LocalRedirect(returnUrl);
+                    return LocalRedirect(returnUrl);// redirect về trang cũ mà user đang truy cập trước khi bị ép quay lại trang login
                 }
-
-                //TH2: Yêu cầu xác thực 2 yêu tố( 2FA)
                 if (result.RequiresTwoFactor)
                 {
-                    //Hệ thống chuyển hướng browser(redirect) sang trang nhập mã 2FA(Loginwith2fa.cshtml) kèm theo tham số ReturnUrl và RememberMe
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
-                //TH3: Tài khoản đã bị khóa tạm thời do nhập sai mật khẩu quá 5 lần
                 if (result.IsLockedOut)
-                {   
+                {
                     _logger.LogWarning("User account locked out.");
-                    // chuyển hướng trình duyệt sang trang tbao tài khoản bị khóa tạm thời(lockout.cshtml)
                     return RedirectToPage("./Lockout");
                 }
                 else
-
-                //TH4: sai mật khẩu hoặc tài khoản không tồn tại
                 {
-                    //nạp tbao lỗi "Invaild login attempt vào model Error 
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    //Trả về hàm Page(), hệ thống sẽ render lại chính trang đăng nhập login.cshtml 
-                    // kèm theo thông báo lỗi màu đỏ trên dỏm để người dùng nhập lại 
                     return Page();
                 }
             }
-            //Nếu dữ liệu đầu vào sai định dạng(VD: trống email)    
 
-            // trả về hàm Page() render lại chính trang đăng nhập hiện tại để hiển thị lỗi validaton 
             return Page();
         }
     }

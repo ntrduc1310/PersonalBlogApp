@@ -6,6 +6,7 @@ namespace PersonalBlogApp.Data
 {
     /// <summary>
     /// Database context for the application, handling Identity tables, Blogs, and Comments.
+    /// Qly kết nối và theo dỗi các thay đổi dl để đồng bộ hóa với SQL Server
     /// </summary>
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -35,14 +36,14 @@ namespace PersonalBlogApp.Data
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid multiple cascade paths
+                .OnDelete(DeleteBehavior.Restrict); //ngăn xóa 
 
             // Configure Blog relationships
             builder.Entity<Blog>()
                 .HasOne(b => b.User)
                 .WithMany(u => u.Blogs)
                 .HasForeignKey(b => b.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);//automatic delete comment when delete user
         }
     }
 }

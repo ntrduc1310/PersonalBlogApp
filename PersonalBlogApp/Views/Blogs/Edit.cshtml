@@ -18,22 +18,24 @@
             <form asp-action="Edit" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
+                <!--sinh ra html thuần <input type="hidden" name="Id" value=" "/> -->
 
                 <!-- Validation summary -->
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="row g-4">
-                    <!-- Title field -->
+                    <!-- Title field | inputTagHelper read thuộc tính title from Model -->
                     <div class="col-md-9">
                         <label asp-for="Title" class="form-label fw-bold text-muted small">Tiêu đề bài viết <span class="text-danger">*</span></label>
                         <input asp-for="Title" class="form-control form-control-custom" placeholder="Nhập tiêu đề hấp dẫn..." required />
                         <span asp-validation-for="Title" class="text-danger small"></span>
                     </div>
 
-                    <!-- Priority dropdown -->
+                    <!-- Priority dropdown (SelectTagHelper read gtri Model.Priority)-->
                     <div class="col-md-3">
                         <label asp-for="Priority" class="form-label fw-bold text-muted small">Độ ưu tiên</label>
                         <select asp-for="Priority" class="form-select form-select-custom" required>
+                        <!--auto chèn thuộc tính selected="select" vào thẻ <option value =" "> tương ứng=> hthi đúng bài viết lên mh -->
                             <option value="5">5 - Rất cao</option>
                             <option value="4">4 - Cao</option>
                             <option value="3">3 - Trung bình</option>

@@ -18,12 +18,12 @@
                     <i class="bi bi-rocket-takeoff-fill fs-4 text-primary"></i>
                     <span>PersonalBlog</span>
                 </a>
-                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-md-inline-flex justify-content-between">
-                    <ul class="navbar-nav align-items-center gap-1">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto align-items-center gap-1">
                         <li class="nav-item">
                             <a class="nav-link nav-link-custom @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
@@ -49,6 +49,71 @@
         </nav>
     </header>
     <div class="container">
+        <!-- Dynamic Breadcrumb Navigation -->
+        @{
+            var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+            var action = ViewContext.RouteData.Values["action"]?.ToString();
+        }
+        @if (controller != "Home" || action != "Index")
+        {
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb bg-white rounded-pill px-4 py-2.5 shadow-sm border border-light">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+                    
+                    @if (controller == "Blogs")
+                    {
+                        @if (action == "Index")
+                        {
+                            <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Bài viết</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item"><a asp-controller="Blogs" asp-action="Index" class="text-decoration-none text-muted">Bài viết</a></li>
+                            @if (action == "Create")
+                            {
+                                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Tạo bài viết</li>
+                            }
+                            else if (action == "Edit")
+                            {
+                                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Chỉnh sửa</li>
+                            }
+                            else if (action == "Details")
+                            {
+                                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Chi tiết bài viết</li>
+                            }
+                        }
+                    }
+                    else if (controller == "Users")
+                    {
+                        @if (action == "Index")
+                        {
+                            <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Quản lý User</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item"><a asp-controller="Users" asp-action="Index" class="text-decoration-none text-muted">Quản lý User</a></li>
+                            @if (action == "Edit")
+                            {
+                                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Chỉnh sửa</li>
+                            }
+                            else if (action == "Delete")
+                            {
+                                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Xóa</li>
+                            }
+                        }
+                    }
+                    else if (controller == "Profile")
+                    {
+                        <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Hồ sơ cá nhân</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">@controller</li>
+                    }
+                </ol>
+            </nav>
+        }
+
         <main role="main" class="pb-5">
             @RenderBody()
         </main>
